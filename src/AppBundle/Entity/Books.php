@@ -1,7 +1,5 @@
 <?php
-
 namespace AppBundle\Entity;
-
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 /**
@@ -18,7 +16,6 @@ class Books
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     *
      */
     private $id;
 
@@ -40,9 +37,9 @@ class Books
     /**
      * @var ReadersRelations
      *
-     * @ORM\OneToMany(targetEntity="\AppBundle\Entity\ReadersRelations" , mappedBy="Books" , cascade={"all"})
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\ReadersRelations" , mappedBy="book" , cascade={"all"})
      */
-    private $readers;
+    private $readersRelations;
 
     public function __toString()
     {
@@ -52,7 +49,7 @@ class Books
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -68,14 +65,13 @@ class Books
     public function setName($name)
     {
         $this->name = $name;
-
         return $this;
     }
 
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -91,17 +87,32 @@ class Books
     public function setAuthor($author)
     {
         $this->author = $author;
-
         return $this;
     }
 
     /**
      * Get author
      *
-     * @return string 
+     * @return string
      */
     public function getAuthor()
     {
         return $this->author;
+    }
+
+    /**
+     * @return ReadersRelations
+     */
+    public function getReadersRelations()
+    {
+        return $this->readersRelations;
+    }
+
+    /**
+     * @param ReadersRelations $readersRelations
+     */
+    public function setReadersRelations($readersRelations)
+    {
+        $this->readersRelations = $readersRelations;
     }
 }

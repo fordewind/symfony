@@ -1,7 +1,5 @@
 <?php
-
 namespace AppBundle\Entity;
-
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 /**
@@ -20,24 +18,20 @@ class ReadersRelations
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
     /**
      * @var Books
      *
-     * @ORM\ManyToOne(targetEntity="\AppBundle\Entity\Books", inversedBy="ReadersRelations")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Books", inversedBy="ReadersRelations")
      * @ORM\JoinColumn(name="book_id", referencedColumnName="id")
      */
     private $book;
-
     /**
      * @var Readers
      *
-     * @ORM\ManyToOne(targetEntity="\AppBundle\Entity\Readers", inversedBy="ReadersRelations")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Readers", inversedBy="ReadersRelations")
      * @ORM\JoinColumn(name="reader_id", referencedColumnName="id")
      */
     private $reader;
-
-
     /**
      * Get id
      *
@@ -47,7 +41,6 @@ class ReadersRelations
     {
         return $this->id;
     }
-
     /**
      * Set book
      *
@@ -57,10 +50,8 @@ class ReadersRelations
     public function setBook($book)
     {
         $this->book = $book;
-
         return $this;
     }
-
     /**
      * Get book
      *
@@ -70,7 +61,6 @@ class ReadersRelations
     {
         return $this->book;
     }
-
     /**
      * Set reader
      *
@@ -80,10 +70,8 @@ class ReadersRelations
     public function setReader($reader)
     {
         $this->reader = $reader;
-
         return $this;
     }
-
     /**
      * Get reader
      *

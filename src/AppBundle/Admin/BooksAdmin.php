@@ -83,6 +83,7 @@ class BooksAdmin extends Admin
             ))
         ;
     }
+
     /**
      * @param \Sonata\AdminBundle\Datagrid\DatagridMapper $datagridMapper
      *
@@ -95,6 +96,7 @@ class BooksAdmin extends Admin
             ->add('author')
         ;
     }
+
     // setup the default sort column and order
     protected $datagridValues = array(
         '_sort_order' => 'ASC',

@@ -1,37 +1,36 @@
 <?php
 /**
- * Default Controller  file
+ * Default Controller file
  *
  * PHP version 5.3
  *
- * @category   testsymfony
- * @package    AppBundle
+ * @category testsymfony
+ * @package AppBundle
  * @subpackage Controller
- * @author     Rykun Vladyslav <vladislavrykun@gmail.com>
- * @copyright  2011-2015 (http://test.com). All rights reserved.
- * @license    http://test.com Commercial
- * @link       http://test.com
+ * @author Rykun Vladyslav <vladislavrykun@gmail.com>
+ * @copyright 2011-2015 (http://test.com). All rights reserved.
+ * @license http://test.com Commercial
+ * @link http://test.com
  */
-
 namespace AppBundle\Admin;
-
+use Doctrine\ORM\EntityManager;
 use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Validator\ErrorElement;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
-
+use Sonata\DoctrineORMAdminBundle\Model\ModelManager;
 /**
  * Default Controller Class
  *
- * @category   testsymfony
- * @package    AppBundle
+ * @category testsymfony
+ * @package AppBundle
  * @subpackage Controller
- * @author     Rykun Vladyslav <vladislavrykun@gmail.com>
- * @copyright  2011-2015 (http://test.com). All rights reserved.
- * @license    http://test.com Commercial
- * @link       http://test.com
+ * @author Rykun Vladyslav <vladislavrykun@gmail.com>
+ * @copyright 2011-2015 (http://test.com). All rights reserved.
+ * @license http://test.com Commercial
+ * @link http://test.com
  */
 class ReadersAdmin extends Admin
 {
@@ -47,14 +46,10 @@ class ReadersAdmin extends Admin
     {
         $formMapper
             ->add('name')
-            ->add('book',
+            ->add(
+                'readersRelations',
                 'entity',
-                array(
-                    'class'    => 'AppBundle:Books',
-                    'property' => 'name',
-                    'multiple' => true,
-                    'expanded' => true
-                )
+                array('class' => 'AppBundle:Books', 'expanded' => true, 'multiple' => true, 'by_reference' => false)
             );
     }
 
@@ -63,12 +58,14 @@ class ReadersAdmin extends Admin
      *
      * @return void
      */
-    protected function configureShowField(ShowMapper $showMapper)
+    protected function configureShowFields(ShowMapper $showMapper)
     {
         $showMapper
             ->add('name')
-            ->add('books')
-        ;
+            ->add(
+                'readersRelations',
+                'entity', array('class' => 'AppBundle:Books', 'expanded' => true, 'multiple' => true, 'by_reference' => false)
+            );
     }
 
     /**
@@ -80,15 +77,31 @@ class ReadersAdmin extends Admin
     {
         $listMapper
             ->add('name')
-            ->add('books')
-            ->add('_action', 'input', array(
-                'actions' => array(
-                    'show' => array(),
-                    'edit' => array(),
-                    'delete' => array(),
+            ->add(
+                'readersRelations',
+                'entity', array('class' => 'AppBundle:Books')
+            )
+            ->add(
+                '_action',
+                'input',
+                array(
+                    'actions' => array(
+                        'show' => array(),
+                        'edit' => array(),
+                        'delete' => array(),
+                    )
                 )
-            ))
-        ;
+            );
+    }
+
+    /**
+     * @return EntityManager
+     */
+    public function getEntityManager()
+    {
+        /** @var $modelManager ModelManager */
+        $modelManager = $this->getModelManager();
+        return $modelManager->getEntityManager($this->getClass());
     }
 
     /**
@@ -99,8 +112,23 @@ class ReadersAdmin extends Admin
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper
-            ->add('name')
-        ;
+            ->add('name');
+    }
+
+    public function prePersist($reader)
+    {
+        $this->preUpdate($reader);
+    }
+
+    public function preUpdate($reader)
+    {
+        $relations = $this->getEntityManager()->getRepository('AppBundle:ReadersRelations')->findBy(array('reader' => $reader));
+
+        foreach($relations as $relation){
+            $this->getEntityManager()->remove($relation);
+        }
+
+        $this->getEntityManager()->flush();
     }
 
     // setup the default sort column and order

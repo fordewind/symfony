@@ -1,14 +1,13 @@
 <?php
-
 namespace AppBundle\Entity;
-
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use AppBundle\Entity\Repositories\ReadersRepository;
 use AppBundle\Entity\ReadersRelations;
 /**
  * Readers
  *
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\Repositories\ReadersRepository")
  * @ORM\Table(name="Readers")
  */
 class Readers
@@ -18,7 +17,7 @@ class Readers
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")     *
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
@@ -26,76 +25,39 @@ class Readers
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
-     *      */
+     * */
     private $name;
 
     /**
      * @var ReadersRelations
      *
-     * @ORM\OneToMany(targetEntity="\AppBundle\Entity\ReadersRelations" , mappedBy="Readers" , cascade={"all"})
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\ReadersRelations" , mappedBy="reader" , cascade={"all"}, orphanRemoval=true)
      */
-    private $book;
+    private $readersRelations;
 
     private $books;
-
-    public function __construct()
-    {
-        $this->book = new ArrayCollection();
-        $this->books = new ArrayCollection();
-
-    }
 
     public function __toString()
     {
         return $this->name;
     }
-
-    public function getBook()
-    {
-        $books = new ArrayCollection();
-
-        foreach($books as $p)
-        {
-            $books[] = $p->getBook();
-        }
-
-        return $books;
-    }
-
-    public function setBook($books)
-    {
-        foreach($books as $p)
-        {
-            $po = new ReadersRelations();
-
-            $po->setBook($p);
-            $po->setReader($this);
-
-            $this->addPo($po);
-        }
-
-    }
-
     public function addPo($ProductOrder)
     {
-        $this->book[] = $ProductOrder;
+        $this->readersRelations[] = $ProductOrder;
     }
-
     public function removePo($ProductOrder)
     {
         return $this->book->removeElement($ProductOrder);
     }
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
         return $this->id;
     }
-
     /**
      * Set name
      *
@@ -105,17 +67,45 @@ class Readers
     public function setName($name)
     {
         $this->name = $name;
-
         return $this;
     }
 
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @return ReadersRelations
+     */
+    public function getReadersRelations()
+    {
+        $books = [];
+        if(count($this->readersRelations)) {
+            foreach ($this->readersRelations as $readersRelation) {
+                $books[] = $readersRelation->getBook();
+            }
+        }
+
+        return $books;
+    }
+
+    /**
+     * @param ReadersRelations $readersRelations
+     */
+    public function setReadersRelations($readersRelations)
+    {
+        foreach($readersRelations as $readersRelation)
+        {
+            $po = new ReadersRelations();
+            $po->setBook($readersRelation);
+            $po->setReader($this);
+            $this->addPo($po);
+        }
     }
 }

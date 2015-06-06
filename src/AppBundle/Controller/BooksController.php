@@ -12,35 +12,5 @@ use AppBundle\Form\BooksForm;
  */
 class BooksController extends Controller
 {
-    /**
-     * Creates a new Blog entity.
-     *
-     */
-    public function createAction(Request $request)
-    {
-        $entity = new Books();
-        $form = $this->createForm(new BooksForm(), $entity);
-        $form->bind($request);
 
-        if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-
-            $em->persist($entity);
-            $em->flush();
-        }
-    }
-
-//    /**
-//     * Show a book entry
-//     */
-//    public function showAction($id)
-//    {
-//        $em = $this->getDoctrine()->getManager();
-//
-//        $book = $em->getRepository('AppBundle:Books')->find($id);
-//
-//        return $this->render('AppBundle:Default:show.html.twig', array(
-//            'book'      => $book,
-//        ));
-//    }
 }
